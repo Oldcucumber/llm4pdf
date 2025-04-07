@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <title>简易对话界面</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #292a2d;
+            color: #fff;
+            height: 100vh;
+            color-scheme: dark;
+            width: 100%;
+            overflow: hidden;
+            overflow-wrap: break-word;
+        }
+        .main{
+            flex-direction: column;
+            align-items: center;
+            display: flex;
+            align-items: center;
+            height: 100vh;
+        }
+        .main_container{
+            width: 100%;
+            display: flex;
+            box-sizing: content-box;
+            position: relative;
+        }
+        .header{
+            height: 37px;
+            padding-left: 32px;
+            padding-right: 32px;
+            padding-top: 20px;
+            position: relative;
+        }
+        .title{
+            text-align: center;
+            padding: 8px 12px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        .title_mask{
+            background: linear-gradient(rgba(41, 42, 45, .8) 0%, rgba(41, 42, 45, 0) 100%);
+            pointer-events: none;
+            width: 100%;
+            height: 32px;
+            position: absolute;
+            top: 100%;
+            left: 1px;
+            z-index: 10;
+        }
+        .messages{
+            width: 100%;
+            overflow-y: scroll;
+            padding: 0 32px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: calc(100vh - 60px);
+            box-sizing: border-box;
+        }.message_box{
+            width: 100%;
+            padding-top: 32px;
+            flex: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .chat-messages{
+            max-width: 800px;
+            position: relative;
+            width: 100%;
+        }
+        .message_bot{
+            max-width: 800px;
+            margin-bottom: 12px;
+            padding-bottom: 32px;
+        }
+        .message_bot_text{
+            font-size: 16px;
+            line-height: 28px;
+            color: #f8faff;
+            word-break: break-word;
+        }
+        .message_user{
+            max-width: 800px;
+            justify-content: flex-end;
+            margin-bottom: 16px;
+            padding-bottom: 32px;
+            display: flex;
+        }
+        .message_user_text{
+            font-size: 16px;
+            line-height: 28px;
+            color: #f8faff;
+            padding: calc((44px - 28px) / 2) 20px;
+            box-sizing: border-box;
+            white-space: pre-wrap;
+            word-break: break-word;
+            background-color: #414158;
+            border-radius: 14px;
+            max-width: calc(100% - 48px);
+            position: relative;
+        }
+        .input{
+            background-color: #292a2d;
+            bottom: 0;
+            position: sticky;
+            display: flex;
+            width: 100%;
+            align-items: center;
+            flex-direction: column;
+            max-width: 800px;
+            flex-shrink: 0;
+        }
+        .input_border{
+            border-color: #536e8c;
+            cursor: text;
+            box-sizing: border-box;
+            width: 100%;
+            font-size: 16px;
+            line-height: 28px;
+            transition: box-shadow .2s cubic-bezier(.4,0,.2,1);
+            box-shadow: none;
+            background-color: #292a2d;
+            border-radius: 24px;
+            flex-direction: column;
+            display: flex;
+            position: relative;
+            flex: auto;
+        }
+        .input_border2{
+            box-shadow: 0 0 0 .5px rgba(192, 192, 192, .3);
+            z-index: 1;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: flex-start;
+            padding: 10px;
+            display: flex;
+            overflow: hidden;
+            background-color: #404045;
+            border-radius: 24px;
+            width: 100%;
+            box-sizing: border-box;
+            flex: auto;
+        }
+        .input_box{
+            width: 100%;
+            max-height: calc(12* 28px);
+            margin: 0 4px;
+            position: relative;
+            flex: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        .user-input{
+            resize: none;
+            color: rgb(245 245 245);
+            caret-color: rgb(245 245 245);
+            background-color: transparent;
+            position: absolute;
+        }
+        .placeholder{
+            visibility: hidden;
+            pointer-events: none;
+            min-height: 56px;
+        }
+        .user-input, .placeholder{
+            font-size: inherit;
+            line-height: inherit;
+            word-break: break-word;
+            white-space: pre-wrap;
+            border: none;
+            outline: none;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: inherit;
+            display: block;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            overflow: auto;
+        }
+        .button_box{
+            --function-row-offset: 2px;
+            width: calc(100% - 2px);
+            padding-left: 2px;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-top: 4px;
+            display: flex;
+            height: 32px;
+            flex: 1;
+            justify-content: flex-end;
+        }
+        .send-button{
+            color: #f8faff;
+            background-color: #4d6bfe;
+            white-space: nowrap;
+            cursor: pointer;
+            background: #4d6bfe;
+            border: none;
+            border-radius: 16px;
+            flex-direction: column;
+            flex-shrink: 0;
+            justify-content: center;
+            align-items: center;
+            min-width: 32px;
+            height: 32px;
+            margin-top: auto;
+            display: flex;
+            padding-inline: 1px;
+        }
+        .button1{
+            justify-content: center;
+            align-items: center;
+            min-width: 28px;
+            height: 28px;
+            display: flex;
+        }
+        .button2{
+            font-size: 16px;
+            width: 16px;
+            height: 16px;
+            line-height: 0;
+            display: inline-flex;
+        }
+        .icon{
+            width: inherit;
+            height: inherit;
+            fill: none;
+            overflow-clip-margin: content-box;
+            overflow: hidden;   
+        }
+        .term{
+            color: #737373;
+            font-size: 12px;
+            margin: 6px 0;
+            line-height: 14px;  
+        }
+
+        textarea {
+            text-rendering: auto;
+            letter-spacing: normal;
+            word-spacing: normal;
+            line-height: normal;
+            text-transform: none;
+            text-indent: 0px;
+            text-shadow: none;
+            text-align: start;
+            appearance: auto;
+            -webkit-rtl-ordering: logical;
+            cursor: text;
+            overflow-wrap: break-word;
+            column-count: initial !important;
+        }
+        
+    </style>
+</head>
+<body>
+    <div class="main" id="app">
+        <el-container id="main_container" class="main_container">
+            <el-header class="header">
+                <div class="title">对话界面</div>
+                <div class="title_mask"><!-- 标题下方的渐变遮罩 --></div>
+            </el-header>
+            <el-main class="messages">
+                <div class="message_box">
+                    <div id="chat-messages" class="chat-messages"></div>
+                </div>
+                <div class="input" id="input">
+                    <div class="input_border">
+                        <div class="input_border2">
+                            <div class="input_box">
+                                <textarea id="user-input" class="user-input" rows="2" oninput="document.getElementById('placeholder').textContent = document.getElementById('user-input').value" placeholder="给 DickSuck 发送消息"></textarea>
+                                <div class="placeholder" id = "placeholder"></div><!-- 用于撑开输入框 -->
+                            </div>
+                            <div class="button_box">
+                                <button class="send-button" onclick="sendMessage()">
+                                    <div class="button1">
+                                        <div class="button2" style="font-size: 16px; width: 16px; height: 16px;">
+                                            <svg class="icon" width="14" height="16" viewBox="0 0 14 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M7 16c-.595 0-1.077-.462-1.077-1.032V1.032C5.923.462 6.405 0 7 0s1.077.462 1.077 1.032v13.936C8.077 15.538 7.595 16 7 16z" fill="currentColor"></path>
+                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M.315 7.44a1.002 1.002 0 0 1 0-1.46L6.238.302a1.11 1.11 0 0 1 1.523 0c.421.403.421 1.057 0 1.46L1.838 7.44a1.11 1.11 0 0 1-1.523 0z" fill="currentColor"></path>
+                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M13.685 7.44a1.11 1.11 0 0 1-1.523 0L6.238 1.762a1.002 1.002 0 0 1 0-1.46 1.11 1.11 0 0 1 1.523 0l5.924 5.678c.42.403.42 1.056 0 1.46z" fill="currentColor"></path>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="term">
+                        内容由 AI 生成，请仔细甄别
+                    </div>
+                </div>
+                
+            </el-main>
+        </el-container>
+    </div>
+
+
+    <script src="https://unpkg.com/vue@2/dist/vue.js"></script>
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script>
+        new Vue({
+                el: '#app',
+                data: function() {
+                    return { visible: false }
+                }
+            })
+        
+        function sendMessage() {
+            const userInput = document.getElementById('user-input');
+            const messageText = userInput.value.trim();
+            if (messageText === '') return;
+
+            // 创建用户消息元素
+            const userMessage = document.createElement('div');
+            const userMessageText = document.createElement('div');
+            userMessage.className = 'message_user';
+            userMessageText.className = 'message_user_text';
+            userMessageText.textContent = messageText;
+            document.getElementById('chat-messages').appendChild(userMessage);
+            userMessage.appendChild(userMessageText);
+
+            // 清空输入框
+            userInput.value = '';
+            document.getElementById('placeholder').textContent = ""
+
+            // 模拟机器人回复
+            setTimeout(() => {
+                const botMessage = document.createElement('div');
+                const botMessageText = document.createElement('div');
+                botMessage.className = 'message_bot';
+                botMessageText.className = 'message_bot_text';
+                botMessageText.textContent = '这是AI的回复';
+                document.getElementById('chat-messages').appendChild(botMessage);
+                botMessage.appendChild(botMessageText);
+            }, 10);
+        }
+    </script>
+</body>
+</html>
